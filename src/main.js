@@ -17,7 +17,7 @@ const configBase = require("@/config/config.base");
 Vue.use(hlElement, { size: "mini" });
 Vue.use(VueCompositionAPI);
 Vue.use(permission);
-
+require("./mock"); // mock数据
 Vue.prototype.dicts = dicts;
 Vue.prototype.$echarts = echarts;
 Vue.prototype.$bkConfig = Object.assign({}, configBase);
