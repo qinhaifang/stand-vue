@@ -1,86 +1,105 @@
-"use strict";
+const defaultSettings = require("./src/config/config.base");
+const TerserPlugin = require("terser-webpack-plugin");
+const webpack = require("webpack");
 const path = require("path");
-const defaultSettings = require("./src/settings.js");
-
+const port = process.env.port || process.env.npm_config_port || 8080; // dev port
+const Timestamp = new Date().getTime();
 function resolve(dir) {
   return path.join(__dirname, dir);
 }
-
-const name = defaultSettings.title || "vue Element Admin"; // page title
-
-// If your port is set to 80,
-// use administrator privileges to execute the command line.
-// For example, Mac: sudo npm run
-// You can change the port by the following method:
-// port = 9527 npm run dev OR npm run dev --port = 9527
-const port = process.env.port || process.env.npm_config_port || 9527; // dev port
-
-// All configuration item explanations can be find in https://cli.vuejs.org/config/
+const name = defaultSettings.title || "vue Admin Template"; // page title
+const isProd = process.env.NODE_ENV === "production";
+const target =
+  process.env.NODE_ENV === "mock"
+    ? "http://localhost:8080"
+    : "https://www.******";
+console.log([process.env.VUE_APP_BASE_API], target);
 module.exports = {
-  /**
-   * You will need to set publicPath if you plan to deploy your site under a sub path,
-   * for example GitHub Pages. If you plan to deploy your site to https://foo.github.io/bar/,
-   * then publicPath should be set to "/bar/".
-   * In most cases please use '/' !!!
-   * Detail: https://cli.vuejs.org/config/#publicpath
-   */
-  publicPath: "/",
-  outputDir: "dist",
-  assetsDir: "static",
-  lintOnSave: process.env.NODE_ENV === "development",
-  productionSourceMap: false,
   devServer: {
     port: port,
-    open: true,
+    open: false,
     overlay: {
       warnings: false,
       errors: true,
     },
-    before: require("./mock/index"),
     proxy: {
-      // detail: https://cli.vuejs.org/config/#devserver-proxy
-      [process.env.VUE_APP_BASE_API]: {
-        target: `http://localhost:8080`,
+      "/attendance": {
+        target,
         changeOrigin: true,
-        pathRewrite: {
-          ["^" + process.env.VUE_APP_BASE_API]: "",
+      },
+    },
+    before: require("./mock/index"),
+  },
+  publicPath: "/",
+  outputDir: "dist",
+  assetsDir: "static",
+  runtimeCompiler: false, // 开启生产环境SourceMap，设为false打包时不生成.map文件
+  productionSourceMap: false, // 开启生产环境SourceMap，设为false打包时不生成.map文件
+  lintOnSave: process.env.NODE_ENV === "development",
+
+  configureWebpack: (config) => {
+    // 生产环境打包分析体积
+    if (isProd) {
+      return {
+        output: {
+          filename: `static/js/[name].${process.env.VUE_APP_Version}.${Timestamp}.js`,
+          chunkFilename: `static/js/[name].${process.env.VUE_APP_Version}.${Timestamp}.js`,
         },
-      },
-    },
-    disableHostCheck: true,
+        name: name,
+        plugins: [
+          // new BundleAnalyzerPlugin(),
+          new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+          new webpack.ProvidePlugin({
+            jQuery: "jquery",
+            $: "jquery",
+          }),
+        ],
+        optimization: {
+          minimizer: [
+            new TerserPlugin({
+              terserOptions: {
+                ecma: undefined,
+                warnings: false,
+                parse: {},
+                compress: {
+                  drop_console: true,
+                  drop_debugger: false,
+                  pure_funcs: ["console.log"], // 移除console
+                },
+              },
+            }),
+          ],
+        },
+      };
+    } else {
+      config.name = name;
+      config.devtool = "source-map";
+    }
   },
-  configureWebpack: {
-    // provide the app's title in webpack's name field, so that
-    // it can be accessed in index.html to inject the correct title.
-    name: name,
-    resolve: {
-      alias: {
-        "@": resolve("src"),
-      },
-    },
-  },
-  chainWebpack(config) {
-    // it can improve the speed of the first screen, it is recommended to turn on preload
-    // it can improve the speed of the first screen, it is recommended to turn on preload
+
+  // 扩展 webpack 配置，使 packages 加入编译
+  chainWebpack: (config) => {
     config.plugin("preload").tap(() => [
       {
         rel: "preload",
-        // to ignore runtime.js
-        // https://github.com/vuejs/vue-cli/blob/dev/packages/@vue/cli-service/lib/config/app.js#L171
         fileBlacklist: [/\.map$/, /hot-update\.js$/, /runtime\..*\.js$/],
         include: "initial",
       },
     ]);
 
-    // when there are many pages, it will cause too many meaningless requests
+    config.resolve.alias
+      .set("@", resolve("src"))
+      .set("assets", resolve("src/assets"))
+      .set("components", resolve("src/components"))
+      .set("views", resolve("src/views"))
+      .set("global", resolve("src/global"));
     config.plugins.delete("prefetch");
-
     // set svg-sprite-loader
-    config.module.rule("svg").exclude.add(resolve("src/icons")).end();
+    config.module.rule("svg").exclude.add(resolve("src/global/icons")).end();
     config.module
       .rule("icons")
       .test(/\.svg$/)
-      .include.add(resolve("src/icons"))
+      .include.add(resolve("src/global/icons"))
       .end()
       .use("svg-sprite-loader")
       .loader("svg-sprite-loader")
@@ -88,7 +107,6 @@ module.exports = {
         symbolId: "icon-[name]",
       })
       .end();
-
     config.when(process.env.NODE_ENV !== "development", (config) => {
       config
         .plugin("ScriptExtHtmlWebpackPlugin")
@@ -127,4 +145,5 @@ module.exports = {
       config.optimization.runtimeChunk("single");
     });
   },
+  parallel: false,
 };

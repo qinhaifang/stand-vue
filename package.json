@@ -7,7 +7,9 @@
     "dev": "vue-cli-service serve",
     "dev:local": "vue-cli-service serve --mode local",
     "dev:prod": "vue-cli-service serve --mode production",
-    "build": "vue-cli-service build --mode production"
+    "build": "vue-cli-service build --mode production",
+    "mock":"vue-cli-service serve --mode mock",
+    "mockServer":"node ./mockServer.js"
   },
   "gitHooks": {
     "pre-commit": "npm run lint"

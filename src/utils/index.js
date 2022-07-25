@@ -1,16 +1,17 @@
+
 import axios from "axios";
 export const getJson = function (method) {
-  return new Promise((resolve, reject) => {
-    axios({
-      method: "get",
-      url: method,
-      headers: { "Content-type": "multipart/form-data" },
-    })
-      .then((res) => {
-        resolve(res);
+    return new Promise((resolve, reject) => {
+      axios({
+        method: "get",
+        url: method,
+        headers: { "Content-type": "multipart/form-data" },
       })
-      .catch((error) => {
-        reject(error);
-      });
-  });
-};
+        .then((res) => {
+          resolve(res);
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    });
+  };

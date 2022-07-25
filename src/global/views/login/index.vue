@@ -63,7 +63,7 @@
   </div>
 </template>
 <script>
-import { getPublicKey, getKaptcha, login } from "@/api/login";
+import { getPublicKey, getKaptcha } from "@/api/login";
 import CryptoJS from "crypto-js";
 import JSEncrypt from "jsencrypt/bin/jsencrypt";
 var timerId;
@@ -214,10 +214,6 @@ export default {
               this.loginForm.captcha = "";
               this.handleKaptcha();
             });
-          // login(this.loginForm).then((res) => {
-          //   console.log("login", res);
-          //   this.$router.push({ path: "/UserManage" });
-          // });
         } else {
           this.loginForm.passwords = "";
           return false;
