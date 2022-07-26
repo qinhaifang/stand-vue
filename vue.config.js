@@ -4,6 +4,27 @@ const webpack = require("webpack");
 const path = require("path");
 const port = process.env.port || process.env.npm_config_port || 8080; // dev port
 const Timestamp = new Date().getTime();
+
+const express = require("express");
+const app = express();
+var router = express.Router();
+/*post方法*/
+var bodyParser = require("body-parser");
+app.use(bodyParser.json()); // 添加json解析
+app.use(
+  bodyParser.urlencoded({
+    extended: false,
+  })
+);
+/*为app添加中间件处理跨域请求*/
+app.use(function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "PUT, GET, POST, DELETE, OPTIONS");
+  res.header("Access-Control-Allow-Headers", "X-Requested-With");
+  res.header("Access-Control-Allow-Headers", "Content-Type");
+  next();
+});
+
 function resolve(dir) {
   return path.join(__dirname, dir);
 }
@@ -13,7 +34,6 @@ const target =
   process.env.NODE_ENV === "mock"
     ? "http://localhost:8080"
     : "https://www.******";
-console.log([process.env.VUE_APP_BASE_API], target);
 module.exports = {
   devServer: {
     port: port,
@@ -28,7 +48,12 @@ module.exports = {
         changeOrigin: true,
       },
     },
-    before: require("./mock/index"),
+    before(app) {
+      app.post("/login", function (req, res) {
+        console.log(req, res);
+      });
+    },
+    // before: require("./mock/index"),
   },
   publicPath: "/",
   outputDir: "dist",

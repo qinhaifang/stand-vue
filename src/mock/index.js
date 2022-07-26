@@ -1,7 +1,7 @@
 const Mock = require("mockjs");
 
 Mock.setup({
-  timeout: 10000,
+  timeout: "200-600",
 });
 
 let configArray = [];
@@ -17,6 +17,6 @@ files.keys().forEach((key) => {
 configArray.forEach((item) => {
   for (let [path, target] of Object.entries(item)) {
     let protocol = path.split("|");
-    Mock.mock(new RegExp("^" + protocol[1]), protocol[0], target);
+    Mock.mock(new RegExp(protocol[1]), protocol[0], target);
   }
 });

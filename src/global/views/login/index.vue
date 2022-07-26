@@ -66,6 +66,7 @@
 import { getPublicKey, getKaptcha } from "@/api/login";
 import CryptoJS from "crypto-js";
 import JSEncrypt from "jsencrypt/bin/jsencrypt";
+import axios from "axios";
 var timerId;
 export default {
   data() {
@@ -137,14 +138,17 @@ export default {
     },
     // 获取验证码
     handleKaptcha() {
-      getKaptcha()
-        .then((res) => {
-          this.kaptcha = res.base64Img;
-          this.loginForm.captchaKey = res.captchaKey;
-          this.loginForm.symmetricKey = res.symmetricKey;
-          this.publicKey = res.asymmetricPublicKey;
-        })
-        .catch((e) => {});
+      axios.get("https://localhost:8080/captcha", {}).then((res) => {
+        console.log(222, res.data.data);
+      });
+      // getKaptcha()
+      //   .then((res) => {
+      //     this.kaptcha = res.base64Img;
+      //     this.loginForm.captchaKey = res.captchaKey;
+      //     this.loginForm.symmetricKey = res.symmetricKey;
+      //     this.publicKey = res.asymmetricPublicKey;
+      //   })
+      //   .catch((e) => {});
     },
     // 获取非对称私钥
     handlePublicKey() {

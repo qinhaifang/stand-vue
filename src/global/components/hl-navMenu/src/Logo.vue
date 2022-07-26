@@ -1,5 +1,9 @@
 <template>
-  <div class="sidebar-logo-container" :class="{ collapse: collapse }">
+  <div
+    class="sidebar-logo-container"
+    :class="{ collapse: collapse }"
+    :style="{ '--logoBg': logoBg }"
+  >
     <transition name="sidebarLogoFade">
       <router-link
         v-if="collapse"
@@ -11,11 +15,7 @@
         <h1 v-else class="sidebar-title">{{ title }}</h1>
       </router-link>
       <router-link v-else key="expand" class="sidebar-logo-link" to="/topology">
-        <el-image v-if="logoUrl" :src="logoUrl" class="sidebar-logo">
-          <div slot="placeholder" class="image-slot">
-            加载中<span class="dot">...</span>
-          </div>
-        </el-image>
+        <el-image v-if="logoUrl" :src="logoUrl" class="sidebar-logo" />
         <h1 class="sidebar-title" v-if="title">{{ title }}</h1>
       </router-link>
     </transition>
@@ -35,6 +35,10 @@ export default {
       required: true,
     },
     logoSort: {
+      type: String,
+      required: true,
+    },
+    logoBg: {
       type: String,
       required: true,
     },
@@ -58,7 +62,7 @@ export default {
 
 <style lang="scss" scoped>
 // logo颜色
-$logo-background-color: #0d0d0d;
+// $logo-background-color: #0d0d0d;
 .sidebarLogoFade-enter-active {
   transition: opacity 1.5s;
 }
@@ -74,13 +78,10 @@ $logo-background-color: #0d0d0d;
   width: 100%;
   height: 60px;
   line-height: 60px;
-  background: $logo-background-color;
+  background: var(--logoBg);
   box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.05);
   overflow: hidden;
   text-align: center;
-  ::v-deep .el-image__error {
-    background: inherit;
-  }
   & .sidebar-logo-link {
     height: 100%;
     width: 100%;
@@ -88,7 +89,8 @@ $logo-background-color: #0d0d0d;
     align-items: center;
     & .sidebar-logo {
       width: 148px;
-      height: 43px;
+      margin-top: 12px;
+      // height: 43px;
       vertical-align: middle;
       // img{
       //   vertical-align: middle;

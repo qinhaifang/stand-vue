@@ -2,7 +2,7 @@ export default {
   // 用户登录
   "get|login": (config) => {
     let data = JSON.parse(config.body);
-    console.log(data, config);
+    console.log("mock进来了");
     let userList = {};
     return {
       code: 200,
@@ -12,10 +12,7 @@ export default {
     };
   },
   // 验证码
-  "post|captcha": (config) => {
-    console.log("验证码", config);
-    let data = JSON.parse(config.body);
-    let userList = {};
+  "get|captcha": (config) => {
     return {
       code: 200,
       data: {

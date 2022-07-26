@@ -1,11 +1,21 @@
 <template>
-  <div class="hl-navMenu" :class="!sidebarOpened ? 'hideSidebar' : ''">
+  <div
+    class="hl-navMenu"
+    :class="!sidebarOpened ? 'hideSidebar' : ''"
+    :style="{
+      '--menuHover': navColorConfig.menuHover,
+      '--menuActive': navColorConfig.menuActive,
+      '--navMenuBg': navColorConfig.navMenuBg,
+      '--isOpened': navColorConfig.isOpened,
+    }"
+  >
     <!-- logo -->
     <logo
       v-if="navMenuConfig.showLogo"
       :logo="navMenuConfig.logoUrl"
       :logoSort="navMenuConfig.logoSortUrl"
       :collapse="!sidebarOpened"
+      :logoBg="navColorConfig.logoBg"
     />
     <div style="height: calc(100% - 60px)" class="navContainer">
       <hl-scroll style="height">
@@ -17,9 +27,9 @@
           :unique-opened="false"
           :collapse-transition="false"
           mode="vertical"
-          :background-color="navMenuBg"
-          :text-color="navMenuTextColor"
-          :active-text-color="navMenuTextColor"
+          :background-color="navColorConfig.navMenuBg"
+          :text-color="navColorConfig.navMenuTextColor"
+          :active-text-color="navColorConfig.navMenuTextColor"
         >
           <sidebar-item
             v-for="(route, num) in navMenuConfig.routesList"
@@ -64,12 +74,21 @@ export default {
   data() {
     return {
       sidebarOpened: false,
-      navMenuBg: navMenuStyle.navMenuBg,
-      navMenuTextColor: navMenuStyle.navMenuTextColor,
+      // navMenuBg: navColorConfig.navMenuBg,
+      // navMenuTextColor: navMenuStyle.navMenuTextColor,
+      // 颜色配置
+      navColorConfig: {
+        // menuHover:'#5b606f',
+        // menuActive:'#464c59',
+        // navMenuBg:"#1d1f26",
+        // isOpened:"#292c35",
+        // navMenuTextColor:"#fff"
+      },
     };
   },
   created() {
     this.sidebarOpened = this.value;
+    this.navColorConfig = this.navMenuConfig.color;
   },
   watch: {
     value(v) {
@@ -101,9 +120,12 @@ export default {
 };
 </script>
 <style lang="scss">
-$menuHover: #5b606f;
-$menuActive: #464c59;
+// $menuHover: #5b606f;
+// $menuActive: #464c59;
 
+.menuContainer .el-icon-arrow-down:before {
+  content: "\e790" !important;
+}
 /*菜单关闭*/
 .el-submenu > .el-submenu__title .el-submenu__icon-arrow {
   -webkit-transform: scale(1) rotateZ(0deg);
@@ -114,7 +136,7 @@ $menuActive: #464c59;
 #app .el-submenu.is-opened > .el-submenu__title .el-submenu__icon-arrow {
   -webkit-transform: scale(1) rotateZ(0deg);
   -ms-transform: scale(1) rotate(0deg);
-  transform: scale(1) rotateZ(-90deg);
+  transform: scale(1) rotateZ(90deg);
 }
 
 .zdy-sub-menu .el-menu-item {
@@ -142,7 +164,7 @@ $menuActive: #464c59;
     font-weight: bold;
     &:hover {
       position: relative;
-      background-color: $menuHover !important;
+      background-color: var(--menuHover) !important;
       &:before {
         content: "";
         position: absolute;
@@ -165,9 +187,8 @@ $menuActive: #464c59;
   .nest-menu .el-submenu > .el-submenu__title,
   .el-menu-item {
     &:hover {
-      // you can use $subMenuHover
       color: #fff !important;
-      background-color: $menuHover !important;
+      background-color: var(--menuHover) !important;
     }
   }
 
@@ -192,18 +213,19 @@ $menuActive: #464c59;
 }
 </style>
 <style scoped lang="scss">
-$menuHover: #5b606f;
-$menuActive: #464c59;
-$isOpened: #292c35;
-$nav-menu-background-color: #1d1f26;
+// $menuHover: #5b606f;
+// $menuActive: #464c59;
+// $isOpened: #292c35;
+// $nav-menu-background-color:'#1d1f26';
 .hl-navMenu {
   width: 250px;
   height: 100%;
   position: relative;
   .navContainer {
-    background: $nav-menu-background-color;
+    // background: var(--navMenuBg);
   }
   ::v-deep .menuContainer {
+    background-image: linear-gradient(134deg, #1698f6 0%, #5625e1 100%);
     height: 100%;
     padding-top: 20px;
     ::v-deep .el-menu-item {
@@ -228,7 +250,7 @@ $nav-menu-background-color: #1d1f26;
       font-size: 14px;
       &:hover {
         position: relative;
-        background-color: $menuHover !important;
+        background-color: var(--menuHover) !important;
         &:before {
           content: "";
           position: absolute;
@@ -242,7 +264,6 @@ $nav-menu-background-color: #1d1f26;
       }
       i {
         color: #fff;
-        // font-size: 12px;
         margin-right: 14px;
         transform: scale(1);
         font-weight: 400;
@@ -256,7 +277,6 @@ $nav-menu-background-color: #1d1f26;
       font-size: 14px;
       &:hover {
         position: relative;
-        // background-color: $menuHover !important;
         &:before {
           content: "";
           position: absolute;
@@ -271,7 +291,7 @@ $nav-menu-background-color: #1d1f26;
     }
     li.el-menu-item.is-active {
       position: relative;
-      background-color: $menuActive !important;
+      background-color: var(--menuActive) !important;
       color: #fff !important;
       font-weight: bold;
       &:before {
@@ -295,26 +315,23 @@ $nav-menu-background-color: #1d1f26;
     width: 100% !important;
   }
   ::v-deep.el-submenu.is-opened {
-    background: $isOpened;
+    background: var(--isOpened);
     & .el-submenu__title {
-      background: $isOpened !important;
+      background: var(--isOpened) !important;
       &:hover {
-        background-color: $menuHover !important;
+        background-color: var(--menuHover) !important;
       }
-      // &> .el-submenu__icon-arrow{
-      //     transform: scale(0.6) rotateZ(90deg);
-      //   }
     }
 
     & .el-menu {
-      background: $isOpened !important;
+      background: var(--isOpened) !important;
       .el-menu-item {
-        background: $isOpened !important;
+        background: var(--isOpened) !important;
         &:hover {
-          background-color: $menuHover !important;
+          background-color: var(--menuHover) !important;
         }
         &.is-active {
-          background-color: $menuActive !important;
+          background-color: var(--menuActive) !important;
         }
       }
     }
